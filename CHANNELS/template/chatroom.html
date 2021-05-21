@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>chat room</title>
+</head>
+<body>
+<textarea id="chat-text" cols="80" rows="30"></textarea><br>
+<input id="input" type="text" size="80"><br>
+<input id="submit" type="button" value="Send">
+
+<div id="user-hello"></div>
+{{room_name|json_script:"room-name"}}
+{{request.user.username|json_script:"user_username"}}
+<script>
+    const user_username = JSON.parse(document.getElementById('user_username').textContent);
+    const roomName = JSON.parse(document.getElementById('room-name').textContent);
+
+    #our new message we are going to send
+    document.querySelector('#submit').onclick = function (e){
+         #Capture the mesage from the input
+         const messageInputDom = document.querySelector(#input);
+         #put it into the valiable called mesage
+         const message = messageInputDom.value;
+         chatSocket.send(JSON.stringify({
+             #send back into our server
+             'message' : message,
+             'username' : user_username,
+         }));
+         #remove the message from Dom just to clear it
+         messageInputDOm.value = ' ';
+    }
+    # creating the connection
+    const chatSocket = new webSocket(
+         'ws://' + window.location.host + '/ws/chat/' + roomName + '/'
+
+    );
+    #when we receive mesage pass it here
+    chatSocket.onmessage = function (e) {
+          const data = JSON.parse(e.data);
+          #check what data have been returned
+          console.log(data)
+          # display all the information/message
+          document.querySelector('#chat-text').value += (data.username + ':' + data.message + '|n')
+    }
+
+</script>
+</body>
+</html>
